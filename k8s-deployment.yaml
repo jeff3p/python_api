@@ -28,13 +28,13 @@ spec:
               value: "SAMPLE"
           ports:
             - name: http
-              containerPort: 5000
+              containerPort: 8080
               protocol: TCP
           # Liveness & readiness probes
           readinessProbe:
             httpGet:
               path: /
-              port: 5000
+              port: 8080
             initialDelaySeconds: 10
             periodSeconds: 10
             timeoutSeconds: 2
@@ -42,7 +42,7 @@ spec:
           livenessProbe:
             httpGet:
               path: /
-              port: 5000
+              port: 8080
             initialDelaySeconds: 10
             periodSeconds: 20
             timeoutSeconds: 3
