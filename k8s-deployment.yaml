@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: python-api
+  labels:
+    app: python-api
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: python-api
+  template:
+    metadata:
+      labels:
+        app: python-api
+    spec:
+      # OpenShift best practice: run as non-root and allow the platform to assign a UID
+      securityContext:
+        runAsNonRoot: true
+        # Do NOT set a specific runAsUser; OpenShift will inject a random UID that must be allowed by the image
+      containers:
+        - name: python-api
+          #image: python-api:latest
+          image: quay.io/jfronius/python-api:v1
+          imagePullPolicy: Always
+          env:
+            - name: SAMPLE
+              value: "SAMPLE"
+          ports:
+            - name: http
+              containerPort: 5000
+              protocol: TCP
+          # Liveness & readiness probes
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 5000
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 2
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 5000
+            initialDelaySeconds: 10
+            periodSeconds: 20
+            timeoutSeconds: 3
+            failureThreshold: 3
+          resources:
+            requests:
+              cpu: 10m
+              memory: 16Mi
+            limits:
+              cpu: 50m
+              memory: 64Mi
