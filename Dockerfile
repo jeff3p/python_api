@@ -1,8 +1,7 @@
-# Use Red Hat Universal Base Image (UBI) 10 minimal
-FROM registry.access.redhat.com/ubi10/ubi-minimal:latest
-
-# Install Python and pip
-RUN microdnf install -y python3 python3-pip && microdnf clean all
+FROM quay.io/hummingbird/python:latest-builder
+USER 0
+RUN microdnf -y install python3 python3-pip && microdnf -y clean all
+USER ${CONTAINER_DEFAULT_USER}
 
 # Set working directory
 WORKDIR /app
