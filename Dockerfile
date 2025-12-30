@@ -1,20 +1,15 @@
 FROM quay.io/hummingbird/python:latest-builder
+
+# Temporarily switch to root for package installation
 USER 0
-RUN microdnf -y install python3 python3-pip && microdnf -y clean all
+
+# Fedora rawhide provides Flask as an rpm with a basic set of dependencies
+RUN dnf install -y python3-flask && dnf clean all
+
+# Switch back to the default user to install and run the application
 USER ${CONTAINER_DEFAULT_USER}
+COPY app.py .
 
-# Set working directory
-WORKDIR /app
-
-# Copy project files
-COPY main.py /app/
-COPY endpoints/ /app/endpoints/
-
-# Install Python dependencies
-RUN pip3 install --no-cache-dir fastapi uvicorn
-
-# Expose FastAPI port
-EXPOSE 5000
-
-# Run FastAPI with Uvicorn
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "5000"]
+# Appropriately set the stop signal for the python interpreter executed as PID 1
+STOPSIGNAL SIGINT
+ENTRYPOINT ["python", "./app.py"]
