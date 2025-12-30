@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: python-api-svc
+  labels:
+    app: python-api
+spec:
+  selector:
+    app: python-api
+  ports:
+    - name: http
+      port: 80            # cluster-internal port
+      targetPort: 5000    # container port (matches PORT env)
+      protocol: TCP
+  type: ClusterIP
